@@ -58,7 +58,9 @@ class EscPosPrinter:
             "<ds>": Commands.DoubleStrike.value,
             "</ds>": Commands.DoubleStrikeOff.value,
             "<t>": Commands.Tab.value,
-            "<lf>": Commands.FeedLine.value
+            "<lf>": Commands.FeedLine.value,
+            "<beep>": Commands.Beep.value,
+            "<cut>": Commands.Cutter.value,
         }
         for i in range(0, 7):
             for j in range(0, 7):
@@ -68,8 +70,18 @@ class EscPosPrinter:
             data_bytes = data_bytes.replace(key.encode("cp1252", errors="replace"), value)
         self.data += data_bytes + end.encode("cp1252", errors="replace")
     
+    def pulse(self, ontime=255, offtime=20):
+        self.data += Commands.pulse(ontime, offtime)
+    
+    def qr(self, data: str, size=6, ecc=48):
+        self.data += Commands.qr(data, size, ecc)
+
     def raw(self, data: bytes):
         self.data += data
+    
+    def cmd(self, *data: str):
+        # e.g. '1B' -> b'\x1B'
+        self.data += bytes([int(i, 16) for i in data])
 
     def footer(self, close=False):
         # More LF for Feed

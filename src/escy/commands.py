@@ -27,6 +27,14 @@ class Commands(Enum):
     ReversePrintMode = b'\x1D\x42\x01' # GS B 1
     DoubleStrikeOff = b'\x1b\x47\x00' # Esc G 0
     DoubleStrike = b'\x1b\x47\x01' # Esc G 1
+    Beep = b'\x1B\x70\x00\x55\x20' # Esc p m t1 t2
+    @staticmethod
+    def pulse(ontime=255, offtime=20):
+        if ontime > 255:
+            ontime = 255
+        if offtime > 255:
+            offtime = 255
+        return b'\x1B\x70\x00' + bytes([ontime, offtime])
     @staticmethod
     def qr(data: str, size=6, ecc=48):
         d = data.encode("iso-8859-1")
